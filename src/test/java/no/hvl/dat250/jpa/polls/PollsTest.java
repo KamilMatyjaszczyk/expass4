@@ -6,7 +6,6 @@ import dat250.models.Vote;
 import dat250.models.VoteOption;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +76,7 @@ public class PollsTest {
     public void testVotes() {
         emf.runInTransaction(em -> {
             Long vimVotes = em.createQuery(
-                            "select count(distinct v) " +
+                            "select count(v) " +
                                     "from Vote v " +
                                     "join v.voteOption o " +
                                     "join o.poll p " +
@@ -89,7 +88,7 @@ public class PollsTest {
                     .getSingleResult();
 
             Long emacsVotes = em.createQuery(
-                            "select count(distinct v) " +
+                            "select count(v) " +
                                     "from Vote v " +
                                     "join v.voteOption o " +
                                     "join o.poll p " +
@@ -112,6 +111,22 @@ public class PollsTest {
             List<String> poll2Options = em.createQuery("select o.caption from Poll p join p.options o join p.createdBy u where u.email = :mail order by o.presentationOrder", String.class).setParameter("mail", "eve@mail.org").getResultList();
             List<String> expected = Arrays.asList("Yes! Yammy!", "Mamma mia: Nooooo!");
             assertEquals(expected, poll2Options);
+        });
+    }
+
+    @Test
+    public void testShowTables() {
+        emf.runInTransaction(em -> {
+            System.out.println("=== TABLES IN H2 ===");
+            List<Object[]> tables = em.createNativeQuery("SHOW TABLES").getResultList();
+            for (Object[] row : tables) {
+                System.out.println("Table: " + row[0]);
+
+                List<Object[]> cols = em.createNativeQuery("SHOW COLUMNS FROM " + row[0]).getResultList();
+                for (Object[] col : cols) {
+                    System.out.println("   Column: " + col[0] + " (" + col[1] + ")");
+                }
+            }
         });
     }
 }
