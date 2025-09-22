@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserGetResponse> getUser(@PathVariable String id) {
+    public ResponseEntity<UserGetResponse> getUser(@PathVariable Long id) {
         UserGetResponse user = pollManager.getRestrictedUser(id);
         if (user == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(user);
@@ -37,21 +37,20 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = pollManager.createUser(user);
         if (createdUser == null) return ResponseEntity.badRequest().build();
-
         return ResponseEntity.ok(createdUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest updateRequest) {
-        User updatedUser = pollManager.updateUser(id, updateRequest);
+    public ResponseEntity<User> updateUser(@PathVariable Long id,
+                                           @RequestBody UserUpdateRequest updateRequest) {
+        User updatedUser = pollManager.updateUser(String.valueOf(id), updateRequest);
         if (updatedUser == null) return ResponseEntity.notFound().build();
-
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        pollManager.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        pollManager.deleteUser(String.valueOf(id));
         return ResponseEntity.noContent().build();
     }
 }

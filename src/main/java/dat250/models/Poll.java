@@ -1,30 +1,84 @@
 package dat250.models;
 
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "Id")
+@Table(name = "polls")
 public class Poll {
-
-    private String pollId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
     private String question;
     private Instant publishedAt;
     private Instant validUntil;
 
-    private Boolean publicAccess;
-
+//    private Boolean publicAccess;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User createdBy;
+    @OrderBy("Id ASC")
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIdentityReference(alwaysAsId = false)
+    private List<VoteOption> options = new ArrayList<>();
 
-    private List<VoteOption> options;
+    @OrderBy("publishedAt DESC")
+    @OneToMany(mappedBy = "poll", orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIdentityReference(alwaysAsId = true)
+    private List<Vote> votes = new ArrayList<>();
 
     public Poll() {
     }
 
-    // PollId
-    public String getPollId()   {
-        return pollId;
+    public void addVote(Vote v) {
+        if (v == null) return;
+        v.setPoll(this);
+        if (!this.votes.contains(v)) {
+            this.votes.add(v);
+        }
     }
-    public void setPollId(String pollId) {
-        this.pollId = pollId;
+
+    public void addOption(VoteOption opt) {
+        if (opt == null) return;
+        opt.setPoll(this);
+        if (!this.options.contains(opt)) {
+            this.options.add(opt);
+        }
+    }
+
+    public VoteOption addVoteOption(String caption) {
+        if (caption == null || caption.isBlank()) {
+            throw new IllegalArgumentException("No provided caption for the poll's option");
+        }
+
+        for (VoteOption opt : this.options) {
+            if (opt.getCaption().equals(caption)) {
+                return opt;
+            }
+        }
+
+        VoteOption opt = new VoteOption();
+        opt.setPoll(this);
+        opt.setCaption(caption);
+        this.options.add(opt);
+        return opt;
+    }
+
+    // PollId
+    public Long getPollId()   {
+        return Id;
+    }
+    public void setPollId(Long pollId) {
+        this.Id = pollId;
     }
 
     // Question
@@ -51,13 +105,13 @@ public class Poll {
         this.validUntil = validUntil;
     }
 
-    // Public Access
-    public Boolean getPublicAccess()    {
-        return publicAccess;
-    }
-    public void setPublicAccess(Boolean publicAccess)   {
-        this.publicAccess = publicAccess;
-    }
+//    // Public Access
+//    public Boolean getPublicAccess()    {
+//        return publicAccess;
+//    }
+//    public void setPublicAccess(Boolean publicAccess)   {
+//        this.publicAccess = publicAccess;
+//    }
 
     // CreatedBy
     public User getCreatedBy() {
@@ -65,13 +119,28 @@ public class Poll {
     }
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+        if (createdBy != null && !createdBy.getPollsCreated().contains(this)) {
+            createdBy.getPollsCreated().add(this);
+        }
     }
 
     // Options
-    public List<VoteOption> getOptions()    {
-        return options;
+    public List<VoteOption> getOptions() { return options; }
+public void setOptions(List<VoteOption> options) { this.options = options; }
+
+public List<Vote> getVotes() { return votes; }
+public void setVotes(List<Vote> votes) { this.votes = votes; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Poll)) return false;
+        Poll other = (Poll) o;
+        return Id != null && Id.equals(other.Id);
     }
-    public void setOptions(List<VoteOption> options)    {
-        this.options = options;         // NOTE: This implementation may be altered depending on voteOptions should be appended or created new list each time.
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

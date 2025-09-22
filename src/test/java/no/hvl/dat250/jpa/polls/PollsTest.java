@@ -6,6 +6,7 @@ import dat250.models.Vote;
 import dat250.models.VoteOption;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ public class PollsTest {
     @Test
     public void testUsers() {
         emf.runInTransaction(em -> {
-            Integer actual = (Integer) em.createNativeQuery("select count(id) from users", Integer.class).getSingleResult();
+            Integer actual = (Integer) em.createNativeQuery("select count(Id) from users", Integer.class).getSingleResult();
             assertEquals(3, actual);
 
             User maybeBob = em.createQuery("select u from User u where u.username like 'bob'", User.class).getSingleResultOrNull();
@@ -75,12 +76,35 @@ public class PollsTest {
     @Test
     public void testVotes() {
         emf.runInTransaction(em -> {
-            Long vimVotes = em.createQuery("select count(v) from Vote v join v.votesOn as o join o.poll as p join p.createdBy u where u.email = :mail and o.presentationOrder = :order", Long.class).setParameter("mail", "alice@online.com").setParameter("order", 0).getSingleResult();
-            Long emacsVotes = em.createQuery("select count(v) from Vote v join v.votesOn as o join o.poll as p join p.createdBy u where u.email = :mail and o.presentationOrder = :order", Long.class).setParameter("mail", "alice@online.com").setParameter("order", 1).getSingleResult();
+            Long vimVotes = em.createQuery(
+                            "select count(distinct v) " +
+                                    "from Vote v " +
+                                    "join v.voteOption o " +
+                                    "join o.poll p " +
+                                    "join p.createdBy u " +
+                                    "where u.email = :mail and o.caption = :caption",
+                            Long.class)
+                    .setParameter("mail", "alice@online.com")
+                    .setParameter("caption", "Vim")
+                    .getSingleResult();
+
+            Long emacsVotes = em.createQuery(
+                            "select count(distinct v) " +
+                                    "from Vote v " +
+                                    "join v.voteOption o " +
+                                    "join o.poll p " +
+                                    "join p.createdBy u " +
+                                    "where u.email = :mail and o.caption = :caption",
+                            Long.class)
+                    .setParameter("mail", "alice@online.com")
+                    .setParameter("caption", "Emacs")
+                    .getSingleResult();
+
             assertEquals(2, vimVotes);
             assertEquals(1, emacsVotes);
         });
     }
+
 
     @Test
     public void testOptions() {

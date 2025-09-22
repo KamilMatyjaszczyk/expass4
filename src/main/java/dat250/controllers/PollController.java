@@ -26,7 +26,7 @@ public class PollController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Poll> getPoll(@PathVariable String id) {  
+    public ResponseEntity<Poll> getPoll(@PathVariable Long id) {
         Poll poll = pollManager.getPoll(id);
         if (poll == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(poll);
@@ -40,14 +40,14 @@ public class PollController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Poll> updatePoll(@PathVariable String id, @RequestBody Poll poll) {
+    public ResponseEntity<Poll> updatePoll(@PathVariable Long id, @RequestBody Poll poll) {
         Poll updatedPoll = pollManager.updatePoll(id, poll);
         if (updatedPoll == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedPoll);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePoll(@PathVariable String id) {
+    public ResponseEntity<Void> deletePoll(@PathVariable Long id) {
         pollManager.deletePoll(id);
         return ResponseEntity.noContent().build();
     }

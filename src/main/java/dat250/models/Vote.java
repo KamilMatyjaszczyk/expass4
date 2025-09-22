@@ -1,24 +1,47 @@
 package dat250.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+
 import java.time.Instant;
+import java.util.Objects;
 
-
+@Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "Id")
+@Table(name = "votes")
 public class Vote {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
 
-    private String voteId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
     private User user;
-    private String voteOptionId;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vote_option_id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
+    private VoteOption voteOption;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "poll_id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
+    private Poll poll;
+
     private Instant publishedAt;
 
     public Vote()   {
     }
 
     // VoteId
-    public String getVoteId()   {
-        return voteId;
+    public Long getVoteId()   {
+        return Id;
     }
-    public void setVoteId(String voteId)    {
-        this.voteId = voteId;
+    public void setVoteId(Long voteId)    {
+        this.Id = voteId;
     }
 
     // User
@@ -30,11 +53,11 @@ public class Vote {
     }
 
     // VoteOptionId
-    public String getVoteOptionId() {
-        return voteOptionId;
+    public VoteOption getVoteOptionId() {
+        return voteOption;
     }
-    public void setVoteOptionId(String voteOptionId) {
-        this.voteOptionId = voteOptionId;
+    public void setVoteOptionId(VoteOption voteOptionId) {
+        this.voteOption = voteOptionId;
     }
 
     // PublishedAt
@@ -44,4 +67,33 @@ public class Vote {
     public void setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
     }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
+    }
+
+    public VoteOption getVoteOption() {
+        return voteOption;
+    }
+    public void setVoteOption(VoteOption voteOptionId) {
+        this.voteOption = voteOptionId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vote)) return false;
+        Vote other = (Vote) o;
+        return Id != null && Id.equals(other.Id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }

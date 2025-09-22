@@ -25,7 +25,7 @@ public class VoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vote> getVote(@PathVariable String id) {
+    public ResponseEntity<Vote> getVote(@PathVariable Long id) {
         Vote vote = pollManager.getVote(id);
         if (vote == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(vote);
@@ -42,7 +42,7 @@ public class VoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Vote> updateVote(@PathVariable String id, @RequestBody Vote vote) {
+    public ResponseEntity<Vote> updateVote(@PathVariable Long id, @RequestBody Vote vote) {
         Vote updatedVote = pollManager.updateVote(id, vote);
         if (updatedVote == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedVote);
@@ -50,7 +50,7 @@ public class VoteController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVote(@PathVariable String id) {
+    public ResponseEntity<Void> deleteVote(@PathVariable Long id) {
         pollManager.deleteVote(id);
         return ResponseEntity.noContent().build();
     }
