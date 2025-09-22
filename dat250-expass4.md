@@ -1,5 +1,5 @@
 DAT250 – Experiment Assignment 4
-Technical problems and solutions
+Technical problems and solutions:
 
 Working with Hibernate was relatively simple once things were set up, 
 but I discovered that small details must be exactly correct, otherwise nothing works.
@@ -18,7 +18,7 @@ so the domain model can be designed with database mapping in mind from the begin
 My code for this experiment (including the passing test case) can be found here:
 https://github.com/KamilMatyjaszczyk/expass4
 
-Database inspection
+Database inspection:
 To inspect the database, I used both SQL queries inside the test code (SHOW TABLES, SHOW COLUMNS) and the H2 in-memory console. 
 Hibernate automatically generated tables corresponding to my entities:
 
@@ -32,6 +32,6 @@ Here is a screenshot showing the actual tables and columns created in my in-memo
 
 This confirmed that Hibernate correctly mapped my JPA entities to the database structure, and that the inserted test data was persisted.
 
-Pending issues
+Pending issues: 
 At this point, all test cases are green, but I still have some open questions:
 I am not entirely sure what the best practice is for organizing entity relationships in larger projects.
