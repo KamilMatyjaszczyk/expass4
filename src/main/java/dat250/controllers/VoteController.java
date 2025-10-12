@@ -1,7 +1,9 @@
 package dat250.controllers;
 
+import dat250.messaging.VoteEvent;
 import dat250.models.Vote;
 import dat250.services.PollManager;
+import dat250.services.VoteEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +18,11 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/votes")
 public class VoteController {
+
     @Autowired
     private PollManager pollManager;
+    @Autowired
+    private VoteEventPublisher voteEventPublisher;
 
     @GetMapping("")
     public ResponseEntity<List<Vote>> getVotes() {
@@ -35,6 +40,16 @@ public class VoteController {
     public ResponseEntity<Vote> createVote(@RequestBody Vote vote) {
         try {
             Vote created = pollManager.createVote(vote);
+
+            if (created != null && created.getPoll() != null && created.getVoteOptionId() != null) {
+                Long pollId = created.getPoll().getPollId();
+                Long optionId = created.getVoteOptionId().getOptionId();
+
+                VoteEvent event = new VoteEvent(pollId, optionId);
+                voteEventPublisher.publishVoteEvent(pollId, optionId);
+                System.out.println(" [x] Published event: " + event);
+            }
+
             return ResponseEntity.ok(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
