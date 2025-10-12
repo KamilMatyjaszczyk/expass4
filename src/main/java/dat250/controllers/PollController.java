@@ -2,7 +2,7 @@ package dat250.controllers;
 
 import dat250.models.Poll;
 import dat250.services.PollManager;
-
+import dat250.services.VoteEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,14 @@ import java.util.List;
 public class PollController {
     @Autowired
     private PollManager pollManager;
+    @Autowired
+    private VoteEventPublisher publisher;
 
+    @GetMapping("/test-rabbit")
+    public String testRabbit() {
+        publisher.publishVoteEvent(1L, 2L);
+        return "Message sent to RabbitMQ!";
+    }
     @GetMapping("")
     public ResponseEntity<List<Poll>> getPolls() {
         return ResponseEntity.ok(pollManager.getAllPolls());
