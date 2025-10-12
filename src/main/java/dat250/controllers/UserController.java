@@ -43,14 +43,14 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id,
                                            @RequestBody UserUpdateRequest updateRequest) {
-        User updatedUser = pollManager.updateUser(String.valueOf(id), updateRequest);
+        User updatedUser = pollManager.updateUser(id, updateRequest);
         if (updatedUser == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        pollManager.deleteUser(String.valueOf(id));
+        pollManager.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -12,7 +12,7 @@ function App() {
     const [count, setCount] = useState(0)
 
     const [polls, setPolls] = useState([])
-    const [userId, setUserId] = useState(localStorage.getItem('userId'))
+    const [userId, setUserId] = useState(Number(localStorage.getItem('userId')))
 
     useEffect(() => {
         manageUser()
@@ -25,7 +25,6 @@ function App() {
 
     async function manageUser() {
         const checkUserExists = await requestUser(userId);
-
         console.log('User Exists', checkUserExists)
 
         // Test if user already exists
@@ -82,7 +81,6 @@ function App() {
 
         const data = await response.json();
         console.log(`Created new user: ${data}`)
-        return data
     }
 
     async function requestUser(userId) {

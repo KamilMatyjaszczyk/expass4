@@ -60,7 +60,7 @@ public class PollManager {
         return new ArrayList<>(users.values());
     }
 
-    public User updateUser(String userId, UserUpdateRequest updateRequest) {
+    public User updateUser(Long userId, UserUpdateRequest updateRequest) {
         User existingUser = users.get(userId);
         if (existingUser == null) return null;
 
@@ -73,7 +73,7 @@ public class PollManager {
         return existingUser;
     }
 
-    public void deleteUser(String userId) {
+    public void deleteUser(Long userId) {
         users.remove(userId);
     }
 

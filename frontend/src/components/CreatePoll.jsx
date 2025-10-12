@@ -10,7 +10,7 @@ export default function CreatePoll({ createPollCallback }) {
     const [openPopup, setOpenPopup] = useState(false);
 
     const [question, setQuestion] = useState("");
-    const [createdBy, setCreatedBy] = useState(1); // static for now
+    const [createdBy, setCreatedBy] = useState(parseInt(localStorage.getItem("userId")) || 1);
     const [publicAccess, setPublicAccess] = useState(true);
     const [validUntil, setValidUntil] = useState("");
     const [options, setOptions] = useState([{ caption: "" }, { caption: "" }]);
@@ -45,7 +45,7 @@ export default function CreatePoll({ createPollCallback }) {
         let validUntilDate = new Date(validUntil)
         const payload = {
             question: question,
-            createdBy: { userId: 1 },
+            createdBy: { userId: Number(createdBy) },
             publicAccess: publicAccess,
             validUntil: (validUntil ? validUntilDate.toISOString() : null),
             options: options.filter(opt => opt.caption.trim() !== "")
