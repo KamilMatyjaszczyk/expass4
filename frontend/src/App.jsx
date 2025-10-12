@@ -5,7 +5,7 @@ import './App.css'
 import Poll from "./components/Poll.jsx";
 import CreatePoll from "./components/CreatePoll.jsx";
 
-const USER_ID = "user1"
+const USER_ID = 1
 const address = import.meta.env.VITE_API_BASE_URL
 
 function App() {
@@ -32,8 +32,8 @@ function App() {
         if (userId == null || checkUserExists == null) {
             const newUser = createNewUser({userId: USER_ID, email: 'dummy-user@gmx.no', password: 'dummy-user'})
 
-            localStorage.setItem('userId', USER_ID)
-            setUserId(USER_ID)
+            localStorage.setItem('userId', 1)
+            setUserId(1)
 
             fetchPolls()
         }
@@ -82,6 +82,7 @@ function App() {
 
         const data = await response.json();
         console.log(`Created new user: ${data}`)
+        return data
     }
 
     async function requestUser(userId) {

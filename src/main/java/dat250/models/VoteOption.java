@@ -8,9 +8,8 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "Id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "optionId")
 @Table(name = "vote_options")
 public class VoteOption {
     @Id
